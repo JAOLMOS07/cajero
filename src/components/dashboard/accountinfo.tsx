@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { getSession, clearSession } from "@/lib/session";
 import { findAccountByOnlyNumber} from "@/lib/storage";
 import { generateDynamicKey, clearDynamicKey } from "@/lib/dynamicKey";
-import { FaUser, FaWallet, FaMoneyBillAlt, FaKey, FaSignOutAlt, FaStopCircle, FaPlayCircle } from "react-icons/fa";
+import { FaUser, FaWallet, FaKey, FaSignOutAlt, FaStopCircle, FaPlayCircle } from "react-icons/fa";
 
 export const AccountInfo = () => {
     const router = useRouter();
@@ -68,10 +68,7 @@ export const AccountInfo = () => {
                         <FaWallet className="text-gray-500 text-2xl" />
                         <p><span className="font-semibold">Número de Cuenta:</span> {account.accountNumber}</p>
                     </div>
-                    <div className="flex items-center space-x-4">
-                        <FaMoneyBillAlt className="text-gray-500 text-2xl" />
-                        <p><span className="font-semibold">Saldo:</span> ${account.balance.toLocaleString()}</p>
-                    </div>
+
                     <div className="flex items-center space-x-4">
                         <FaKey className="text-gray-500 text-2xl" />
                         <p><span className="font-semibold">Tipo de Cuenta:</span> {account.type}</p>
