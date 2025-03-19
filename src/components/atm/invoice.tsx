@@ -1,22 +1,20 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Alert } from "@/components/shared/alert";
 import { withdrawAmount } from "@/lib/atm";
 import { FaSignOutAlt } from "react-icons/fa";
-import { clearSession } from "@/lib/session";
+import {clearATMSession, getATMSession} from "@/lib/atmSession";
 
 export const Invoice = () => {
-    const searchParams = useSearchParams();
     const router = useRouter();
-    const type = searchParams.get("type");
-    const account = searchParams.get("account");
-    const amount = searchParams.get("amount");
+    const session = getATMSession();
 
-    if (!type || !account || !amount) {
-        return <Alert message="Error: Faltan parámetros en la URL." type="error" />;
+    if (!session || !session.type || !session.accountNumber || !session.amount) {
+        return <Alert message="Error: No se encontró la sesión o faltan datos." type="error" />;
     }
 
+    const { type, accountNumber, amount } = session;
     const amountNumber = Number(amount);
     const withdrawalResult = withdrawAmount(amountNumber);
 
@@ -27,6 +25,7 @@ export const Invoice = () => {
     const bills = withdrawalResult.bills!;
 
     const handleLogout = () => {
+        clearATMSession();
         router.push("/atm");
     };
 
@@ -36,11 +35,11 @@ export const Invoice = () => {
             <div className="space-y-4">
                 <div className="flex justify-between">
                     <span className="font-semibold">Tipo de Retiro:</span>
-                    <span className="text-gray-700">{type }</span>
+                    <span className="text-gray-700">{type}</span>
                 </div>
                 <div className="flex justify-between">
                     <span className="font-semibold">Número de Cuenta:</span>
-                    <span className="text-gray-700">{account}</span>
+                    <span className="text-gray-700">{accountNumber}</span>
                 </div>
                 <div className="flex justify-between">
                     <span className="font-semibold">Monto Retirado:</span>

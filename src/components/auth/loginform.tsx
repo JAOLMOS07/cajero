@@ -17,7 +17,10 @@ export const LoginForm = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const router = useRouter();
-
+    const validateInput = (value: string): boolean => {
+        if (value.length === 0) return true;
+        return /^3\d{0,9}$/.test(value);
+    };
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const account = findAccountByPhoneNumber(accountNumber, accountType);
@@ -52,14 +55,15 @@ export const LoginForm = () => {
                         }
                         value={accountNumber}
                         onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, "");
-                            if (
-                                (accountType === "corriente" && value.length <= 11) ||
-                                (accountType !== "corriente" && value.length <= 10)
-                            ) {
-                                setAccountNumber(value);
+                            const sanitizedValue = e.target.value.replace(/\D/g, ""); // Solo números
+                            if (validateInput(sanitizedValue)) {
+                                setAccountNumber(sanitizedValue);
+                                setError("");
                             }
-                        }}
+                        }
+
+                    }
+
                         icon={accountType === "corriente" ? FaIdCard : FaPhone}
                     />
                 </div>

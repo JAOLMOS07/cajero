@@ -18,7 +18,10 @@ export const CreateAccountForm = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
-
+    const validateInput = (value: string): boolean => {
+        if (value.length === 0) return true;
+        return /^3\d{0,9}$/.test(value);
+    };
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -58,7 +61,15 @@ export const CreateAccountForm = () => {
                         type="text"
                         placeholder="Número de teléfono (10 dígitos)"
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                        onChange={(e) => {
+                            const sanitizedValue = e.target.value.replace(/\D/g, ""); // Solo números
+                            if (validateInput(sanitizedValue)) {
+                                setPhone(sanitizedValue);
+                                setError("");
+                            }
+                        }
+
+                    }
                         icon={FaPhone}
                     />
                 </div>
@@ -90,6 +101,7 @@ export const CreateAccountForm = () => {
                         placeholder="Contraseña"
                         value={password}
                         maxLength={4}
+                        minLength={4}
                         onChange={(e) => setPassword(e.target.value)}
                         icon={FaLock}
                     />

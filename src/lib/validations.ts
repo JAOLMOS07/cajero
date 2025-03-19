@@ -4,7 +4,9 @@ import { getAccounts } from "./storage";
 
 export const validateAccountCreation = (type: AccountType, phone: string, identification:string): { error: string | null; accountNumber: string } => {
     const accounts = getAccounts();
-
+    if(phone[0]!='3') {
+        return { error: "Número de telefono inválido.", accountNumber: "" };
+    }
     const hasAccountType = accounts.some((acc) => acc.type === type && acc.identification == identification);
     if (hasAccountType) {
         return { error: `Ya tienes una cuenta de tipo ${type}.`, accountNumber: "" };

@@ -8,8 +8,8 @@ interface FormInputProps {
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     maxLength?: number;
     minLength?: number;
-    icon?: IconType; // Prop para el icono
-    className?: string; // Prop para clases adicionales
+    icon?: IconType;
+    className?: string;
 }
 
 export const FormInput: React.FC<FormInputProps> = ({
@@ -18,6 +18,7 @@ export const FormInput: React.FC<FormInputProps> = ({
                                                         value,
                                                         onChange,
                                                         maxLength,
+                                                        minLength,
                                                         icon: Icon, // Icono como componente
                                                         className = "", // Clases adicionales
                                                     }) => {
@@ -34,7 +35,7 @@ export const FormInput: React.FC<FormInputProps> = ({
                 value={value}
                 onChange={onChange}
                 maxLength={maxLength}
-                minLength={maxLength}
+                minLength={minLength}
                 className={`w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                     Icon ? "pl-10" : ""
                 } ${className}`}

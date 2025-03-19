@@ -5,25 +5,28 @@ import { useState } from "react";
 import { FormInput } from "@/components/shared/formInput";
 import { Alert } from "@/components/shared/alert";
 import { validateDynamicKey } from "@/lib/dynamicKey";
+import { getATMSession } from "@/lib/atmSession";
 import { FaKey, FaArrowRight } from "react-icons/fa";
 
-interface DynamicKeyFormProps {
-    type: string;
-    account: string;
-    amount: string;
-}
-
-export const DynamicKeyForm = ({ type, account, amount }: DynamicKeyFormProps) => {
+export const DynamicKeyForm = () => {
     const router = useRouter();
     const [dynamicKey, setDynamicKey] = useState("");
     const [error, setError] = useState("");
 
+    const session = getATMSession();
+
+    if (!session || !session.type || !session.accountNumber || !session.amount) {
+        return <Alert message="Error: No se ha completado la información necesaria." type="error" />;
+    }
+
+    const { type, accountNumber, amount } = session;
+
     const handleNext = () => {
-        if (!validateDynamicKey(dynamicKey, account)) {
+        if (!validateDynamicKey(dynamicKey, accountNumber)) {
             setError("Clave dinámica inválida o expirada.");
             return;
         }
-        router.push(`/atm/invoice?type=${type}&account=${account}&amount=${amount}`);
+        router.push("/atm/invoice"); // Redirigir sin parámetros en la URL
     };
 
     return (

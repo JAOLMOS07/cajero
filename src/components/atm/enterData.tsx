@@ -4,32 +4,57 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FormInput } from "@/components/shared/formInput";
 import { Alert } from "@/components/shared/alert";
-import { validatePhoneNumber } from "@/lib/atm";
-import {findAccountByNumber, findAccountByPhoneNumber} from "@/lib/storage";
+import { findAccountByNumber, findAccountByPhoneNumber } from "@/lib/storage";
+import { getATMSession, setATMSession } from "@/lib/atmSession";
 
-interface LoginFormProps {
-    type: string;
-}
-
-export const LoginATMForm = ({ type }: LoginFormProps) => {
+export const LoginATMForm = () => {
     const router = useRouter();
     const [accountNumber, setAccountNumber] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
+    // Obtener el tipo de retiro desde el localStorage
+    const session = getATMSession();
+    const type = session?.type;
+
+    if (!type) {
+        return <Alert message="Error: No se ha seleccionado un tipo de retiro." type="error" />;
+    }
+
+    const validateInput = (value: string): boolean => {
+        if (type === "nequi") {
+            if (value.length === 0) return true;
+            return /^3\d{0,9}$/.test(value);
+        } else if (type === "ahorro" || type === "ahorro_a_la_mano") {
+            if (value.length === 0) return true;
+            if (value.length === 1) return /^[01]$/.test(value);
+            if (value.length === 2) return /^[01]3$/.test(value);
+            return /^[01]3\d{0,9}$/.test(value);
+        } else if (type === "corriente") {
+            return /^\d{0,11}$/.test(value);
+        }
+        return true;
+    };
+
     const handleNext = () => {
+        if (!accountNumber) {
+            setError("Por favor ingrese un número válido.");
+            return;
+        }
 
         if (type === "nequi") {
             const account = findAccountByPhoneNumber(accountNumber, type);
             if (account) {
-                router.push(`/atm/select-amount?type=${type}&account=${account.accountNumber}`);
+                setATMSession({ ...session, accountNumber: account.accountNumber });
+                router.push("/atm/select-amount");
             } else {
                 setError("Número de teléfono inválido.");
             }
-        } else if (type === "ahorro" || type === "corriente") {
+        } else if (type === "ahorro" || type === "corriente" || type === "ahorro_a_la_mano") {
             const account = findAccountByNumber(accountNumber, type);
-            if(account?.password === password) {
-                router.push(`/atm/select-amount?type=${type}&account=${account.accountNumber}`);
+            if (account?.password === password) {
+                setATMSession({ ...session, accountNumber: account.accountNumber }); // Guardar el número de cuenta
+                router.push("/atm/select-amount");
             } else {
                 setError("Número de cuenta o contraseña inválidos.");
             }
@@ -42,7 +67,7 @@ export const LoginATMForm = ({ type }: LoginFormProps) => {
             <div className="space-y-6">
                 <FormInput
                     type="text"
-                    maxLength={type === "nequi"?10:11}
+                    maxLength={type === "nequi" ? 10 : 11}
                     placeholder={
                         type === "nequi"
                             ? "Número de teléfono (10 dígitos)"
@@ -50,8 +75,11 @@ export const LoginATMForm = ({ type }: LoginFormProps) => {
                     }
                     value={accountNumber}
                     onChange={(e) => {
-                        setAccountNumber(e.target.value.replace(/\D/g, ""));
-                        setError("");
+                        const sanitizedValue = e.target.value.replace(/\D/g, ""); // Solo números
+                        if (validateInput(sanitizedValue)) {
+                            setAccountNumber(sanitizedValue);
+                            setError("");
+                        }
                     }}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
