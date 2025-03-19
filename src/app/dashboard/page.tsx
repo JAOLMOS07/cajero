@@ -1,6 +1,5 @@
 // app/dashboard/page.tsx
 "use client";
-import { WithdrawalOptions } from "@/components/dashboard/WithdrawalOptions";
 import {AccountInfo} from "@/components/dashboard/accountinfo";
 
 export default function DashboardPage() {

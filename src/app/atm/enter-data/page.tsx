@@ -2,7 +2,7 @@
 import React from "react";
 
 import {LoginATMForm} from "@/components/atm/enterData";
-import {useParams, useSearchParams} from "next/navigation";
+import { useSearchParams} from "next/navigation";
 export default function EnterDataPage() {
     const searchParams = useSearchParams()
 
