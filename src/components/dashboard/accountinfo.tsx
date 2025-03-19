@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getSession, clearSession } from "@/lib/session";
-import {findAccountByNumber, findAccountByOnlyNumber} from "@/lib/storage";
+import { findAccountByOnlyNumber} from "@/lib/storage";
 import { generateDynamicKey, clearDynamicKey } from "@/lib/dynamicKey";
 import { FaUser, FaWallet, FaMoneyBillAlt, FaKey, FaSignOutAlt, FaStopCircle, FaPlayCircle } from "react-icons/fa";
 
